@@ -1,0 +1,13 @@
+extends ../shared/layout
+block main-content
+    h1 #{currentUser.username}
+    hr
+    .col-lg-2
+        h3 Current Avatar
+        img(src="/img/" + "#{currentUser.avatar}" width="100%" alt="Avatar")
+    .col-lg-2.pull-right
+        form(method="post" enctype="multipart/form-data")
+            label(for="newAvatar") New Avatar
+            input(id="newAvatar" type="file" name="newAvatar" accept="image/*")
+            br
+            input(type="submit" class="btn btn-lg btn-success" value="Change")

@@ -1,0 +1,26 @@
+{
+  "name": "Hirundo",
+  "version": "0.0.3",
+  "description": "Local twitter rip-off",
+  "main": "server.js",
+  "author": "Mitko-Kerezov",
+  "license": "MIT",
+  "scripts": {
+      "start": "node server.js",
+      "test": "./node_modules/.bin/nodemon server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.14.2",
+    "connect-busboy": "0.0.2",
+    "cookie-parser": "^1.4.1",
+    "express": "^4.13.4",
+    "express-session": "^1.13.0",
+    "jade": "^1.11.0",
+    "mongoose": "^4.3.6",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.8.1"
+  }
+}

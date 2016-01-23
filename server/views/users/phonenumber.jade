@@ -1,0 +1,7 @@
+extends ../shared/layout
+block main-content
+    form(method="post")
+        label(for="phoneNumber") Phone number
+        input(id="phoneNumber" class="form-control" type="text" name="phoneNumber" placeholder="Phone number" required="required")
+        br
+        input(type="submit" class="btn btn-lg btn-primary" value="Change")

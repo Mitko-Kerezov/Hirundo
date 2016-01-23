@@ -1,0 +1,18 @@
+extends shared/layout
+block main-content
+    .jumbotron
+        h2 Welcome to the Academy Events System
+    h3 Recent events
+    each event in events
+        .panel.panel-default
+            .panel-heading
+                a(href='/event/#{event._id}') #{event.title}
+            .panel-body
+                |#{event.description}
+                br
+                p When - #{event.date}
+                br
+                .pull-right
+                    |Venue #{event.venuePoints} pts.
+                .pull-left
+                    |Organization #{event.organizationPoints} pts.

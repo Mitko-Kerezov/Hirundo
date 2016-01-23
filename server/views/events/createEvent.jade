@@ -1,0 +1,49 @@
+extends ../shared/layout
+block main-content
+    form(method="post" enctype="multipart/form-data")
+        label(for="title") Title
+        input(id="title" class="form-control" type="text" name="title" placeholder="Title" required="required")
+        br
+        label(for="description") Description
+        input(id="description" class="form-control" type="text" name="description" placeholder="Brief description" required="required")
+        br
+        label Categories
+        div
+            label(for='freeTime') Free time
+                input(id="freeTime" class="form-control" type="checkbox" name="categories" value="Free time")
+        div
+            label(for='e2e') E2E Js Apps
+                input(id="e2e" class="form-control" type="checkbox" name="categories" value="E2E Js Apps")
+        div
+            label(for='web-cloud') Web services and cloud
+                input(id="web-cloud" class="form-control" type="checkbox" name="categories" value="Web services and cloud")
+        div
+            label(for='moveis') Movies
+                input(id="moveis" class="form-control" type="checkbox" name="categories" value="Movies")
+        br
+        label(for="initiative") Initiative
+        select(id="initiative" class="form-control" name="initiative" required="required")
+            option Anyone
+            option Software Academy
+            option Algo Academy
+            option School Academy
+            option Kids Academy
+        br
+        label(for="season") Season
+        select(id="season" class="form-control" name="season" readonly="readonly")
+            option Anyone
+            option Started 2010
+            option Started 2011
+            option Started 2012
+            option Started 2013
+        br
+        hr
+        label(for="location") Coordinates
+        input(id="location" class="form-control" type="text" name="location" placeholder="42, 23")
+        label(for="date") Date
+        input(id="date" class="form-control" type="date" name="date" placeholder="Date")
+        br
+        input(type="submit" class="btn btn-lg" value="Register")
+
+block page-scripts
+    script(src="js/createEvent.js")
