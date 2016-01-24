@@ -1,9 +1,9 @@
 extends ../shared/layout
 
 block main-content
-    form(method="post" enctype="multipart/form-data")
+    form(method="post")
         label(for="username") Username
-        input(id="username" class="form-control" type="text" name="username" placeholder="Username" required="required")
+        input(id="username" class="form-control" type="text" name="username" placeholder="Username" value="#{userData.username}" required="required")
         br
         label(for="password") Password
         input(id="password" class="form-control" type="password" name="password" placeholder="Password" required="required")
@@ -11,35 +11,7 @@ block main-content
         label(for="confirm-password") Confirm Password
         input(id="confirm-password" class="form-control" type="password" name="confirmPassword" placeholder="Confirm password" required="required")
         br
-        label(for="firstName") First Name
-        input(id="firstName" class="form-control" type="text" name="firstName" placeholder="First name" required="required")
-        br
-        label(for="lastName") Last Name
-        input(id="lastName" class="form-control" type="text" name="lastName" placeholder="Last name" required="required")
-        br
         label(for="email") E-mail
-        input(id="email" class="form-control" type="email" name="email" placeholder="E-mail" required="required")
-        br
-        label(for="initiativeAndSeason") TA Initiatives and seasons
-        input(id="initiativeAndSeason" class="form-control" type="text" name="initiativeAndSeason" placeholder="School Academy Started 2011, School Academy Started 2012, etc" required="required")
-        br
-        hr
-        label(for="phoneNumber") Phone number
-        input(id="phoneNumber" class="form-control" type="text" name="phoneNumber" placeholder="Phone number")
-        br
-        label(for="facebook") Facebook
-        input(id="facebook" class="form-control" type="text" name="facebook" placeholder="Facebook profile")
-        br
-        label(for="twitter") Twitter
-        input(id="twitter" class="form-control" type="text" name="twitter" placeholder="Twitter profile")
-        br
-        label(for="linkedIn") LinkedIn
-        input(id="linkedIn" class="form-control" type="text" name="linkedIn" placeholder="LinkedIn profile")
-        br
-        label(for="google") Google+
-        input(id="google" class="form-control" type="text" name="google" placeholder="Google+ profile")
-        br
-        label(for="avatar") Avatar
-        input(id="avatar" class="form-control" type="file" name="avatar" accept="image/*")
+        input(id="email" class="form-control" type="email" name="email" placeholder="E-mail" value="#{userData.email}" required="required")
         br
         input(type="submit" class="btn btn-lg" value="Register")

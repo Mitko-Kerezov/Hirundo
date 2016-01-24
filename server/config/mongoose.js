@@ -1,5 +1,5 @@
 var mongoose = require('mongoose'),
-    EventModel = require('../data/models/Event'),
+    MessageModel = require('../data/models/Message'),
     UserModel = require('../data/models/User');
 
 module.exports = function(config) {
@@ -20,7 +20,6 @@ module.exports = function(config) {
     });
 
     UserModel.init();
-    EventModel.init();
-    UserModel.seedInitialUsers();
-    EventModel.seedInitialEvents();
+    MessageModel.init();
+    UserModel.seedInitialUsers().then(MessageModel.seedInitialEvents);
 };

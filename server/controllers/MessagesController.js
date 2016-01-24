@@ -1,4 +1,4 @@
-var events = require('../data/events');
+var messages = require('../data/messages');
 var users = require('../data/users');
 
 var CONTROLLER_NAME = 'events';
@@ -51,7 +51,7 @@ module.exports = {
                 res.redirect('/create');
                 return;
             }
-            events.create(eventData, function(err, event) {
+            messages.create(eventData, function(err, event) {
                 if (err) {
                     console.log('Failed to register new user: ' + err);
                     return;
@@ -76,7 +76,7 @@ module.exports = {
         var page = parseInt(req.params.page);
         page = page < 0 ? 0 : page;
 
-        events.getPastPage(page, function(err, data) {
+        messages.getPastPage(page, function(err, data) {
             data.sort(function(a, b) {
                 a = new Date(a.date);
                 b = new Date(b.date);
@@ -86,7 +86,7 @@ module.exports = {
         });
     },
     getEventById: function(req, res, next) {
-        events.findById(req.param('id'), function(err, event) {
+        messages.findById(req.param('id'), function(err, event) {
             if (err) {
                 console.log(err);
                 return;
@@ -139,7 +139,7 @@ module.exports = {
     },
     joinEvent: function(req, res, next) {
         var id = req.param('id');
-        events.findById(id, function(err, event) {
+        messages.findById(id, function(err, event) {
             var now = new Date();
             if (event.date < now) {
                 req.session.error = 'Event has already passed!';
@@ -150,14 +150,14 @@ module.exports = {
                     , update = {$push: {users: req.user.username}}
                     , options = {};
 
-                events.update(conditions, update, options, function (err, numAffected) {
+                messages.update(conditions, update, options, function (err, numAffected) {
                     if (err) {
                         console.log('Failed to update events: ' + err);
                         return;
                     }
                 });
 
-                events.findById(id, function (err, event) {
+                messages.findById(id, function (err, event) {
                     conditions = { _id: req.user._id }
                     update = {$push: {eventsJoined: event.title}}
                     options = {};
@@ -177,7 +177,7 @@ module.exports = {
     },
     leaveEvent: function(req, res, next) {
         var id = req.param('id');
-        events.findById(id, function(err, event) {
+        messages.findById(id, function(err, event) {
             var now = new Date();
             if (event.date < now) {
                 req.session.error = 'Event has already passed!';
@@ -194,14 +194,14 @@ module.exports = {
                     , update = {$pull: {users: req.user.username}}
                     , options = {};
 
-                events.update(conditions, update, options, function (err, numAffected) {
+                messages.update(conditions, update, options, function (err, numAffected) {
                     if (err) {
                         console.log('Failed to update events: ' + err);
                         return;
                     }
                 });
 
-                events.findById(id, function (err, event) {
+                messages.findById(id, function (err, event) {
                     conditions = { _id: req.user._id }
                     update = {$pull: {eventsJoined: event.title}}
                     options = {};
@@ -221,7 +221,7 @@ module.exports = {
     },
     postComment: function(req, res, next) {
         var id = req.param('id');
-        events.findById(id, function(err, event) {
+        messages.findById(id, function(err, event) {
             var now = new Date();
             if (event.users.indexOf(req.user.username) < 0) {
                 req.session.error = 'You need to be part of the event in order to comment!';
@@ -232,7 +232,7 @@ module.exports = {
                     , update = {$push: {comments: req.body.comment}}
                     , options = {};
 
-                events.update(conditions, update, options, function (err, numAffected) {
+                messages.update(conditions, update, options, function (err, numAffected) {
                     if (err) {
                         console.log('Failed to update events: ' + err);
                         return;
@@ -245,13 +245,13 @@ module.exports = {
     },
     getEvaluate: function(req, res, next) {
         var id = req.param('id');
-        events.findById(id, function(err, event) {
+        messages.findById(id, function(err, event) {
             res.render(CONTROLLER_NAME + '/evaluate', {event: event});
         });
     },
     postEvaluate: function(req, res, next) {
         var id = req.param('id');
-        events.findById(id, function(err, event) {
+        messages.findById(id, function(err, event) {
             if(event.date >= new Date()) {
                 req.session.error = 'Event has not yet begun!';
                 res.redirect('/');
@@ -261,7 +261,7 @@ module.exports = {
                 res.redirect('/');
             }
             else {
-                events.findById(id, function(err, event) {
+                messages.findById(id, function(err, event) {
                     if (err) {
                         console.log(err);
                         return;
@@ -275,7 +275,7 @@ module.exports = {
                                            organizationPoints: parseInt(evalData.organizationPoints) + parseInt(previousOrganizationPoints)}}
                         , options = {};
 
-                    events.update(conditions, update, options, function (err, numAffected) {
+                    messages.update(conditions, update, options, function (err, numAffected) {
                         if (err) {
                             console.log('Failed to update events: ' + err);
                             return;
@@ -313,7 +313,7 @@ module.exports = {
         var page = parseInt(req.params.page);
         page = page < 0 ? 0 : page;
 
-        events.getUpcomingPage(page, function(err, data) {
+        messages.getUpcomingPage(page, function(err, data) {
             data.sort(function(a, b) {
                 a = new Date(a.date);
                 b = new Date(b.date);

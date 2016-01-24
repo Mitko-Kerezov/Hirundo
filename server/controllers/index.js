@@ -1,9 +1,9 @@
 var UsersController = require('./UsersController');
-var EventsController = require('./EventsController');
+var MessagesController = require('./MessagesController');
 var HomeController = require('./HomeController');
 
 module.exports = {
     users: UsersController,
-    events: EventsController,
+    messages: MessagesController,
     home: HomeController
 };

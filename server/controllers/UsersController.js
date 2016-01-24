@@ -1,125 +1,71 @@
-var encryption = require('../utilities/encryption');
-var validation = require('../utilities/validation');
-var users = require('../data/users');
-var fs = require('fs');
-var User = require('mongoose').model('User');
+var encryption = require('../utilities/encryption'),
+    validation = require('../utilities/validation'),
+    users = require('../data/users'),
+    util = require('util'),
+    fs = require('fs'),
+    User = require('mongoose').model('User');
 
 
 var CONTROLLER_NAME = 'users';
 
 module.exports = {
     getRegister: function(req, res, next) {
-        res.render(CONTROLLER_NAME + '/register')
+        var userData = {
+            username: req.query.username || '',
+            email: req.query.email || ''
+        }
+        res.render(CONTROLLER_NAME + '/register', { userData: userData })
     },
     postRegister: function(req, res, next) {
-        var fstream;
-        req.pipe(req.busboy);
-        var userData = {};
+        var userData = req.body;
 
-        req.busboy.on('file', function (fieldname, file, filename) {
-            var date = new Date().getTime();
-            fstream = fs.createWriteStream(__dirname + '/../../public/img/' + date + filename);
-            file.pipe(fstream);
-            userData.avatar = date + filename;
-            if (userData.avatar == date) {
-                userData.avatar = 'default-avatar.jpg';
-            }
-        });
+        if (!userData.username || !userData.password || !userData.confirmPassword || !userData.email) {
+            req.session.error = 'All fields are required!';
+        }
 
-        req.busboy.on('field', function (fieldname, val, fieldnameTruncated, valTruncated) {
-            if (fieldname === 'username') {
-                if (!validation.checkUsername(val)) {
-                    req.session.error = 'Username must be between 6 and 20 characters long and can contain only latin letters, digits, underscore, space and dots!';
-                }
-            }
-            if (fieldname === 'initiativeAndSeason') {
-                val = val.split(', ');
-            }
-            userData[fieldname] = val;
-        });
+        if (!validation.checkUsername(userData.username)) {
+            req.session.error = 'Username must be between 6 and 20 characters long and can contain only latin letters, digits, underscore, space and dots!';
+        }
 
-        req.busboy.on('finish', function () {
-            if (!req.session.error) {
-                if (userData.password != userData.confirmPassword) {
-                    req.session.error = 'Passwords do not match!';
+        if (userData.password != userData.confirmPassword) {
+            req.session.error = 'Passwords do not match!';
+        }
+
+        if (!req.session.error) {
+            users.findByUsername(userData.username, (err, user) => {
+                if (!!user) {
+                    req.session.error = 'Username already taken!';
                     res.redirect('/register');
                     return;
                 }
 
-                users.findByUsername(userData.username, function (err, user) {
-                    if (!!user) {
-                        req.session.error = 'Username already taken!';
-                        res.redirect('/register');
-                        return;
-                    }
-                });
-
                 userData.salt = encryption.generateSalt();
                 userData.hashPass = encryption.generateHashedPassword(userData.salt, userData.password);
-                users.create(userData, function (err, user) {
+                users.create(userData, (err, user) => {
                     if (err) {
                         console.log('Failed to register new user: ' + err);
                         return;
                     }
 
-                    req.logIn(user, function (err) {
+                    req.logIn(user, (err) => {
                         if (err) {
-                            res.status(400);
-                            return res.send({reason: err.toString()});
-                        }
-                        else {
+                            res.status(400).send({reason: err.toString()});
+                        } else {
                             res.redirect('/');
                         }
                     })
                 });
-            }
-            else {
-                res.redirect('/register');
-                return;
-            }
-        });
+            });
+        } else {
+            var redirectionString = util.format('/register?username=%s&email=%s', userData.username, userData.email)
+            res.redirect(redirectionString);
+        }
     },
     getLogin: function(req, res, next) {
         res.render(CONTROLLER_NAME + '/login');
     },
     getProfile: function(req, res, next) {
         res.render(CONTROLLER_NAME + '/profile');
-    },
-    getAvatar: function(req, res, next) {
-        res.render(CONTROLLER_NAME + '/avatar');
-    },
-    postAvatar: function(req, res, next) {
-        var fstream;
-        req.pipe(req.busboy);
-        var oldAvatar = req.user.avatar;
-        var newAvatar = '';
-        req.busboy.on('file', function (fieldname, file, filename) {
-            var date = new Date().getTime();
-            fstream = fs.createWriteStream(__dirname + '/../../public/img/' + date + filename);
-            file.pipe(fstream);
-            newAvatar = date + filename;
-        });
-
-        req.busboy.on('finish', function () {
-            var conditions = { _id: req.user._id }
-                , update = {$set: {avatar: newAvatar}}
-                , options = {};
-            users.update(conditions, update, options, function(err, numAffected) {
-                if (err) {
-                    console.log('Failed to change avatar: ' + err);
-                    return;
-                }
-                if (oldAvatar !== 'default-avatar.jpg') {
-                    fs.unlink(__dirname + '/../../public/img/' + oldAvatar, function (err) {
-                        if (err) throw err;
-                        console.log('successfully deleted the old avatar');
-                    });
-                }
-           });
-        });
-
-        res.redirect('/avatar');
-
     },
     getPassword: function(req, res, next) {
         res.render(CONTROLLER_NAME + '/password');
@@ -151,62 +97,5 @@ module.exports = {
             req.session.success = 'Password successfully changed!';
             res.redirect('/password');
         });
-    },
-    getPhoneNumber: function(req, res, next) {
-        res.render(CONTROLLER_NAME + '/phonenumber');
-    },
-    postPhoneNumber: function(req, res, next) {
-        var phoneNumber = req.body.phoneNumber;
-        var conditions = { _id: req.user._id }
-            , update = {$set: {phoneNumber: phoneNumber}}
-            , options = {};
-
-        users.update(conditions, update, options, function(err, numAffected) {
-            if (err) {
-                console.log('Failed to change password: ' + err);
-                return;
-            }
-            req.session.success = 'Phone number added successfully!';
-            res.redirect('/profile');
-        });
-    },
-    getAddProfiles: function(req, res, next) {
-        res.render(CONTROLLER_NAME + '/addprofiles');
-    },
-    postAddProfiles: function(req, res, next) {
-        var profilesData = req.body;
-        for (var profile in profilesData) {
-            if (profilesData[profile] === '') {
-                continue;
-            }
-
-            var conditions = { _id: req.user._id }
-                , update = {}
-                , options = {};
-
-            switch (profile) {
-                case 'facebook':
-                    update = {$set: {facebook: profilesData[profile]}};
-                    break;
-                case 'twitter':
-                    update = {$set: {twitter: profilesData[profile]}};
-                    break;
-                case 'linkedIn':
-                    update = {$set: {linkedIn: profilesData[profile]}};
-                    break;
-                case 'google':
-                    update = {$set: {google: profilesData[profile]}};
-                    break;
-            }
-
-            users.update(conditions, update, options, function(err, numAffected) {
-                if (err) {
-                    console.log('Failed to change password: ' + err);
-                    return;
-                }
-                req.session.success = 'Account added successfully!';
-                res.redirect('/addprofiles');
-            });
-        }
     }
 };

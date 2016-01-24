@@ -1,9 +1,7 @@
-var events = require('../data/events');
+var messages = require('../data/messages');
 
 module.exports = {
     getHome: function(req, res, next) {
-        events.getPast(function(err, data) {
-            res.render('index', {events: data})
-        });
+        res.render('index')
     }
 };

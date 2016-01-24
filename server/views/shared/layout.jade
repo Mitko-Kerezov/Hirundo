@@ -1,18 +1,16 @@
 doctype
 html
     head
-        title Academy Events
+        title Hirundo
         link(rel="stylesheet" href="/lib/bootstrap-3.2.0/css/bootstrap.min.css")
         link(rel="stylesheet" href="/css/site.css")
     body
         header.nav
         .container
             .navbar-header
-                a.navbar-brand(href="/") Academy Events
+                a.navbar-brand(href="/") Hirundo
             .navbar-collapse.collapse
                 ul.nav.navbar-nav
-                    li
-                        a(href="/") Home
                     if (currentUser)
                         li
                             a(href="/profile") #{currentUser.username}
@@ -39,9 +37,4 @@ html
                 .alert.alert-success #{successMessage}
 
             block main-content
-
-        footer
-            p.text-center
-                | &copy; Telerik Academy 2014
-
         include scripts
