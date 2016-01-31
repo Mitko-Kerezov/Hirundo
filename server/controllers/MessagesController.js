@@ -1,5 +1,6 @@
 var messages = require('../data/messages');
 var users = require('../data/users');
+var helpers = require('../utilities/helpers');
 var util = require('util');
 
 var CONTROLLER_NAME = 'messages';
@@ -27,7 +28,8 @@ module.exports = {
 
         if (!req.session.error) {
             messageData.authorId = req.user._id;
-            messageData.hashTags = messageData.body.match(hashTagRegex);
+            messageData.authorName = req.user.username;
+            messageData.hashTags = messageData.body.match(hashTagRegex) || [];
             messages.create(messageData, function(err, message) {
                 if (err) {
                     console.error('Failed to post new message: ' + err);
@@ -44,7 +46,17 @@ module.exports = {
         }
     },
     getTimeline: function(req, res, next) {
-        getPostsAndRender(req, res, {authorId: {$in: req.user.following}});
+        var tags = helpers.toArray(req.query.tags),
+            conditions = {
+                authorId: {$in: req.user.following},
+            },
+            url = ~req.url.indexOf("?") ? req.url : req.url + "?";
+
+        if (tags && tags.length) {
+            conditions.hashTags = {$all: tags};
+        }
+
+        getPostsAndRender(req, res, conditions, url, tags);
     },
     getMyTimeline: function(req, res, next) {
         getPostsAndRender(req, res, {authorId: req.user._id});
@@ -52,23 +64,14 @@ module.exports = {
 };
 
 
-function getPostsAndRender(req, res, conditions) {
-    messages.findAndPopulate(conditions, function (err, postsInDb) {
+function getPostsAndRender(req, res, conditions, url, tags) {
+    messages.findPosts(conditions, function (err, posts) {
         if (err) {
             console.error('Failed to get timeline: ' + err);
             res.redirect('/');
             return;
         }
 
-        var posts = postsInDb.map(function(post) {
-            return {
-                username: post.authorId.username,
-                body: post.body,
-                place: post.place,
-                hashTags: post.hashTags
-            }
-        });
-
-        res.render(CONTROLLER_NAME + '/timeline', { posts: posts });
+        res.render(CONTROLLER_NAME + '/timeline', { posts: posts, url: url, tags: tags });
     });
 };

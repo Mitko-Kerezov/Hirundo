@@ -20,8 +20,19 @@ module.exports = function(app) {
     app.get('/timeline', auth.isAuthenticated, controllers.messages.getTimeline);
     app.get('/mytimeline', auth.isAuthenticated, controllers.messages.getMyTimeline);
 
+    app.get('/statistics', auth.isAuthenticated, controllers.statistics.getMenu);
+
+    app.get('/topten', auth.isAuthenticated, controllers.statistics.getTopTen);
+    app.post('/topten', auth.isAuthenticated, controllers.statistics.postTopTen);
+
+    app.get('/highfive', auth.isAuthenticated, controllers.statistics.getHighFive);
+
+    app.get('/timeintervals', auth.isAuthenticated, controllers.statistics.getTimeIntervals);
+    app.post('/timeintervals', auth.isAuthenticated, controllers.statistics.postTimeIntervals);
+
     app.get('/login', controllers.users.getLogin);
     app.post('/login', auth.login);
+
     app.get('/logout', auth.logout);
 
     app.get('/', controllers.home.getHome);

@@ -42,7 +42,7 @@ module.exports = {
                 userData.hashPass = encryption.generateHashedPassword(userData.salt, userData.password);
                 users.create(userData, (err, user) => {
                     if (err) {
-                        console.log('Failed to register new user: ' + err);
+                        console.error('Failed to register new user: ' + err);
                         res.redirect('/register');
                         return;
                     }
@@ -124,25 +124,20 @@ module.exports = {
         })
     },
     getFollow: function(req, res, next) {
-        users.getAllUsernames(function(err, userNames) {
+        users.getUsersNames(req.user._id, req.user.following, function(err, userObjects) {
             if (err) {
                 console.error(err);
                 res.redirect('/');
                 return;
             }
 
-            var usersObj = userNames.map(function(val) {
+            res.render(CONTROLLER_NAME + '/follow', { users: userObjects.map(function(el) {
                 return {
-                    _id: val._id,
-                    username: val.username,
-                    following: !!~req.user.following.indexOf(val._id)
-                }
-            })
-            .filter(function(val) {
-                return val.username !== req.user.username;
-            });
-
-            res.render(CONTROLLER_NAME + '/follow', { users: usersObj });
+                    _id: el._id,
+                    username: el.username,
+                    following: !!~req.user.following.indexOf(el._id)
+                };
+            }) });
         })
     },
     getLogin: function(req, res, next) {
@@ -175,7 +170,7 @@ module.exports = {
 
         users.update(conditions, update, options, function(err, numAffected) {
             if (err) {
-                console.log('Failed to change password: ' + err);
+                console.error('Failed to change password: ' + err);
                 res.redirect('/password');
                 return;
             }

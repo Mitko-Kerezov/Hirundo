@@ -26,7 +26,7 @@ module.exports.init = function() {
     module.exports.seedInitialUsers = function() {
         return User.find({}).exec(function(err, collection) {
             if (err) {
-                console.log('Cannot find users: ' + err);
+                console.error('Cannot find users: ' + err);
                 return;
             }
 
@@ -42,9 +42,19 @@ module.exports.init = function() {
                     salt: salt,
                     hashPass: hashedPwd,
                     email: 'user@gmail.com'
+                }).then(function(user) {
+                    User.create({
+                        username: 'followingUser',
+                        salt: salt,
+                        hashPass: hashedPwd,
+                        email: 'follow@gmail.com',
+                        following: [user._id]
+                    }).then(function(){
+                        console.log('User generatedUser with pass 1234 added to database...');
+                    });
                 });
 
-                console.log('User generatedUser with pass 1234 added to database...');
+                console.log('User followingUser with pass 1234 added to database...');
             }
         });
     };

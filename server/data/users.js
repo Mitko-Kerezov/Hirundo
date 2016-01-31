@@ -13,12 +13,13 @@ module.exports = {
     findById: function(id, callback) {
         User.findOne({_id: id}, callback);
     },
-    getAllUsernames: function(callback) {
-        User.find()
-            .select("username")
-            .sort({
-                username: "asc"
-            })
-            .exec(callback);
+    getUsersNames: function(currentUserId, followingArr, callback) {
+        User.find({_id: {$ne: currentUserId}}, {
+            username: 1,
+        })
+        .sort({
+            username: "asc"
+        })
+        .exec(callback);
     }
 };

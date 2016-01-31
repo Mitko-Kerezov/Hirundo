@@ -1,0 +1,20 @@
+extends ../shared/layout
+block main-content
+    .jumbotron
+        h2 What percentage of your posts have been made between...
+    form(method="post")
+        label(for="timespan") Timespan
+        select(id="timespan" class="form-control" type="text" name="timespan")
+            option 00:00-04:00
+            option 04:00-08:00
+            option 08:00-16:00
+            option 16:00-24:00
+        br
+        input(type="submit" class="btn btn-lg" value="Post")
+    if timespan
+        h2 Seems like
+            strong
+                em  #{percentage}%
+            |  of your posts have been made between
+            strong
+                em  #{timespan}

@@ -1,15 +1,26 @@
 extends ../shared/layout
 block main-content
     if posts.length
+        if tags
+            ul.breadcrumb
+                each tag in tags
+                    li
+                        | #{tag}
+            a(href="/timeline").btn.btn-info Clear
+            br
+            br
         each post in posts
             .panel.panel-primary
                 .panel-heading
-                    h3.panel-title From #{post.username}
+                    h3.panel-title
+                        em  #{post.authorName}
+                        |  posted on #{post.date}
                 .panel-body(style='white-space:pre;')
                     | #{post.body}
-                    hr
-                    each hashTag in post.hashTags
-                        a(href="/hashTags?tag=#{hashTag}")  #{hashTag}
+                    if url && post.hashTags && post.hashTags.length
+                        hr
+                        each hashTag in post.hashTags
+                                a(href="#{url}&tags=#{encodeURIComponent(hashTag)}")  #{hashTag}
                     if post.place
                         hr
                         .pull-right at

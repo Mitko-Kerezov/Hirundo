@@ -1,0 +1,22 @@
+extends ../shared/layout
+block main-content
+    .jumbotron
+        h2 Top
+            strong  ten
+            |  users who posted about..?
+    form(method="post")
+        label(for="keyword") Keyword
+        input(id="keyword" class="form-control" type="text" name="keyword" placeholder="Type in the keyword you want to search for")
+        br
+        input(type="submit" class="btn btn-lg" value="Post")
+    if userPosts
+        br
+        table.table.table-striped.table-hover
+            tr
+                th Username
+                th Number of posts contaning
+                    em  #{keyword}
+            each userPost in userPosts
+                tr
+                    td #{userPost.authorName}
+                    td #{userPost.count}

@@ -6,7 +6,7 @@ module.exports = function() {
     passport.use(new LocalPassport(function(username, password, done) {
         User.findOne({ username: username }).exec(function(err, user) {
             if (err) {
-                console.log('Error loading user: ' + err);
+                console.error('Error loading user: ' + err);
                 return;
             }
 
@@ -28,7 +28,7 @@ module.exports = function() {
     passport.deserializeUser(function(id, done) {
         User.findOne({_id: id}).exec(function(err, user) {
             if (err) {
-                console.log('Error loading user: ' + err);
+                console.error('Error loading user: ' + err);
                 return;
             }
 

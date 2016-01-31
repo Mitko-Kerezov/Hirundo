@@ -8,7 +8,7 @@ module.exports = function(config) {
 
     db.once('open', function(err) {
         if (err) {
-            console.log('Database could not be opened: ' + err);
+            console.error('Database could not be opened: ' + err);
             return;
         }
 
@@ -16,7 +16,7 @@ module.exports = function(config) {
     });
 
     db.on('error', function(err){
-        console.log('Database error: ' + err);
+        console.error('Database error: ' + err);
     });
 
     UserModel.init();
