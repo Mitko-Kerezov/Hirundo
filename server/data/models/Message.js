@@ -29,7 +29,7 @@ module.exports.init = function() {
                     Message.create({
                         body: 'Simple message #simple',
                         place: 'Sofia',
-                        hashTags: ['simple'],
+                        hashTags: ['#simple'],
                         authorId: generatedUser._id
                     });
 

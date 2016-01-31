@@ -3,55 +3,9 @@ block main-content
     h1 #{currentUser.username}
     hr
     .col-lg-2
-        h3 Avatar
-        a.btn(href="/avatar")
-            img(src="/img/" + "#{currentUser.avatar}" width="100%" alt="Avatar")
-        hr
-        h3 First name
-        |#{currentUser.firstName}
-        br
-        h3 Last name
-        | #{currentUser.lastName}
-        br
-        if (currentUser.phoneNumber)
-            h3 Phone number
-            | #{currentUser.phoneNumber}
-            br
         h3 E-mail
         | #{currentUser.email}
         br
-        h3 Initiatives and seasons
-        each initiative in currentUser.initiativeAndSeason
-            |#{initiative}
-            br
-        h3 Accounts
-        |Twitter: #{currentUser.twitter}
-        br
-        |LinkedIn: #{currentUser.linkedIn}
-        br
-        |Facebook: #{currentUser.facebook}
-        br
-        |Google+: #{currentUser.google}
-        hr
-        h3 Events
-        h4 Created
-        each eventCreated in currentUser.eventsCreatedBy
-            |#{eventCreated}
-            br
-        h4 Joined
-        each eventJoined in currentUser.eventsJoined
-            |#{eventJoined}
-            br
-        h4 Event points
-            br
-            |#{currentUser.eventPoints}
     ul.nav.pull-right
-        if (!currentUser.phoneNumber)
-            li
-                a.btn.btn-success(href="/phonenumber") Add phone number
         li
             a.btn.btn-primary(href="/password") Change password
-        li
-            a.btn.btn-success(href="/avatar") Change avatar
-        li
-            a.btn.btn-primary(href="/addprofiles") Add profiles

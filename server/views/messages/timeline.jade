@@ -1,0 +1,19 @@
+extends ../shared/layout
+block main-content
+    if posts.length
+        each post in posts
+            .panel.panel-primary
+                .panel-heading
+                    h3.panel-title From #{post.username}
+                .panel-body(style='white-space:pre;')
+                    | #{post.body}
+                    hr
+                    each hashTag in post.hashTags
+                        a(href="/hashTags?tag=#{hashTag}")  #{hashTag}
+                    if post.place
+                        hr
+                        .pull-right at
+                            strong  #{post.place}
+    else
+        .jumbotron
+            h2 No posts available :(

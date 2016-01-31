@@ -9,5 +9,16 @@ module.exports = {
     },
     findByUsername: function(username, callback) {
         User.findOne({username: username}, callback);
+    },
+    findById: function(id, callback) {
+        User.findOne({_id: id}, callback);
+    },
+    getAllUsernames: function(callback) {
+        User.find()
+            .select("username")
+            .sort({
+                username: "asc"
+            })
+            .exec(callback);
     }
 };

@@ -1,35 +1,24 @@
 var Message = require('mongoose').model('Message');
 
-// var DEFAULT_PAGE_SIZE = 10;
+var NUMBER_OF_POSTS_LIMIT = 50;
 
-// module.exports = {
-//     create: function(event, callback) {
-//         Message.create(event, callback);
-//     },
-//     update: function(conditions, update, options, callback) {
-//         Message.update(conditions, update, options, callback);
-//     },
-//     getUpcoming: function(callback) {
-//         Message.find({date: {"$gte": new Date()}}, callback);
-//     },
-//     getUpcomingPage: function(page, callback) {
-//         Message
-//             .find({date: {"$gte": new Date()}})
-//             .limit(DEFAULT_PAGE_SIZE)
-//             .skip(DEFAULT_PAGE_SIZE * page)
-//             .exec(callback);
-//     },
-//     getPastPage: function(page, callback) {
-//         Message
-//             .find({date: {"$lte": new Date()}})
-//             .limit(DEFAULT_PAGE_SIZE)
-//             .skip(DEFAULT_PAGE_SIZE * page)
-//             .exec(callback);
-//     },
-//     getPast: function(callback) {
-//         Message.find({date: {"$lte": new Date()}}, callback);
-//     },
-//     findById: function(id, callback) {
-//         Message.findOne({_id: id}, callback);
-//     }
-// };
+module.exports = {
+    create: function(event, callback) {
+        Message.create(event, callback);
+    },
+    update: function(conditions, update, options, callback) {
+        Message.update(conditions, update, options, callback);
+    },
+    findById: function(id, callback) {
+        Message.findOne({_id: id}, callback);
+    },
+    findByAuthorIds: function(authorIds, callback) {
+        Message.find({authorId: {$in: authorIds}}, callback);
+    },
+    findAndPopulate: function(conditions, callback) {
+        Message.find(conditions)
+            .limit(NUMBER_OF_POSTS_LIMIT)
+            .populate('authorId')
+            .exec(callback);
+    }
+};

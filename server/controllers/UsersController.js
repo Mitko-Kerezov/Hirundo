@@ -2,8 +2,7 @@ var encryption = require('../utilities/encryption'),
     validation = require('../utilities/validation'),
     users = require('../data/users'),
     util = require('util'),
-    fs = require('fs'),
-    User = require('mongoose').model('User');
+    fs = require('fs');
 
 
 var CONTROLLER_NAME = 'users';
@@ -44,6 +43,7 @@ module.exports = {
                 users.create(userData, (err, user) => {
                     if (err) {
                         console.log('Failed to register new user: ' + err);
+                        res.redirect('/register');
                         return;
                     }
 
@@ -60,6 +60,90 @@ module.exports = {
             var redirectionString = util.format('/register?username=%s&email=%s', userData.username, userData.email)
             res.redirect(redirectionString);
         }
+    },
+    unfollowUser: function(req, res, next) {
+        var id = req.params.id;
+        users.findById(id, function(err, user) {
+            if (err) {
+                console.error(err);
+                res.redirect('/');
+                return;
+            }
+
+            if (!user) {
+                req.session.error = "The user you want to unfollow does not exist!";
+                res.redirect('/follow');
+                return;
+            }
+
+            var conditions = { _id: req.user._id },
+                update = {$pop: {following: id}},
+                options = {};
+
+            users.update(conditions, update, options, function(err, numAffected) {
+                if (err) {
+                    console.error(err);
+                    res.redirect('/');
+                    return;
+                }
+
+                req.session.success = 'Successfully unfollowed user!';
+                res.redirect('/follow');
+            });
+        })
+    },
+    followUser: function(req, res, next) {
+        var id = req.params.id;
+        users.findById(id, function(err, user) {
+            if (err) {
+                console.error(err);
+                res.redirect('/');
+                return;
+            }
+
+            if (!user) {
+                req.session.error = "The user you want to follow does not exist!";
+                res.redirect('/follow');
+                return;
+            }
+
+            var conditions = { _id: req.user._id },
+                update = {$push: {following: id}},
+                options = {};
+
+            users.update(conditions, update, options, function(err, numAffected) {
+                if (err) {
+                    console.error(err);
+                    res.redirect('/');
+                    return;
+                }
+
+                req.session.success = 'Successfully followed user!';
+                res.redirect('/follow');
+            });
+        })
+    },
+    getFollow: function(req, res, next) {
+        users.getAllUsernames(function(err, userNames) {
+            if (err) {
+                console.error(err);
+                res.redirect('/');
+                return;
+            }
+
+            var usersObj = userNames.map(function(val) {
+                return {
+                    _id: val._id,
+                    username: val.username,
+                    following: !!~req.user.following.indexOf(val._id)
+                }
+            })
+            .filter(function(val) {
+                return val.username !== req.user.username;
+            });
+
+            res.render(CONTROLLER_NAME + '/follow', { users: usersObj });
+        })
     },
     getLogin: function(req, res, next) {
         res.render(CONTROLLER_NAME + '/login');
@@ -85,13 +169,14 @@ module.exports = {
         }
 
         var newHashPass = encryption.generateHashedPassword(req.user.salt, passwordData.newPassword);
-        var conditions = { _id: req.user._id }
-            , update = {$set: {hashPass: newHashPass}}
-            , options = {};
+        var conditions = { _id: req.user._id },
+            update = {$set: {hashPass: newHashPass}},
+            options = {};
 
         users.update(conditions, update, options, function(err, numAffected) {
             if (err) {
                 console.log('Failed to change password: ' + err);
+                res.redirect('/password');
                 return;
             }
             req.session.success = 'Password successfully changed!';

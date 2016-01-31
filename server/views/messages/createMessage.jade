@@ -1,0 +1,10 @@
+extends ../shared/layout
+block main-content
+    form(method="post")
+        label(for="body") Body
+        textarea(id="body" class="form-control" maxlength=140 name="body" placeholder="Type what you think" required="required") #{messageData.body}
+        br
+        label(for="place") Place
+        input(id="place" class="form-control" type="text" name="place" value="#{messageData.place}" placeholder="Place of post")
+        br
+        input(type="submit" class="btn btn-lg" value="Post")

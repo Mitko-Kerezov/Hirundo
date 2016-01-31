@@ -1,0 +1,18 @@
+extends ../shared/layout
+block main-content
+    h1 Follow anyone
+    hr
+    table.table.table-striped.table-hover
+        tr
+            th Name
+            th Following
+            th Action
+        each user in users
+            tr
+                td #{user.username}
+                td #{user.following ? "Yes" : "No"}
+                td
+                    if !user.following
+                        a(href="follow/#{user._id}") Follow
+                    else
+                        a(href="unfollow/#{user._id}") Unfollow
